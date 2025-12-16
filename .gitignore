@@ -1,0 +1,23 @@
+# Windows special files
+nul
+NUL
+
+# Claude settings
+.claude/
+
+# Node modules (handled by uflowRN/.gitignore)
+node_modules/
+
+# Build outputs
+*.apk
+*.aab
+*.ipa
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

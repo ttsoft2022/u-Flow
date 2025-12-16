@@ -1,0 +1,69 @@
+<resources>
+    <string name="app_name">SEWMAN u@Flow</string>
+    <string name="app_name_2_lines">SEWMAN \nu@Flow</string>
+    <string name="app_label">Sewman u@Flow</string>
+    <string name="version">Phiên bản: 2025.01</string>
+
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+    <!-- Login activity -->
+    <string name="prompt_username">Tên đăng nhập</string>
+    <string name="prompt_password">Mật khẩu</string>
+    <string name="action_sign_in">Đăng nhập</string>
+
+    <!-- Main activity -->
+    <string name="top_fragment_title">Hôm nay</string>
+    <string name="top_tab_01_title">Số CN</string>
+    <string name="top_tab_02_title">Sản lượng</string>
+    <string name="top_tab_03_title">Tồn</string>
+    <string name="top_tab_01_header">Số người cần &amp; có</string>
+    <string name="top_tab_01_sub_header_01">Cần</string>
+    <string name="top_tab_01_sub_header_02">Có</string>
+    <string name="top_tab_02_header">Kế hoạch &amp; Thực hiện</string>
+    <string name="top_tab_02_sub_header_01">Kế hoạch</string>
+    <string name="top_tab_02_sub_header_02">Thực hiện</string>
+    <string name="top_tab_03_header">Tồn đầu ngày &amp; Hiện tại</string>
+    <string name="top_tab_03_sub_header_01">Tồn đầu</string>
+    <string name="top_tab_03_sub_header_02">Hiện tại</string>
+
+    <string name="bottom_fragment_title">Năng suất 15 ngày</string>
+    <string name="bottom_tab_01_title">Cắt</string>
+    <string name="bottom_tab_02_title">May</string>
+    <string name="bottom_tab_03_title">Là</string>
+    <string name="bottom_tab_04_title">Hoàn thiện</string>
+    <string name="text_cut">Cắt</string>
+    <string name="text_sew">May</string>
+    <string name="text_iron">Là</string>
+    <string name="text_package">Hoàn thiện</string>
+    <string name="text_description">pcs/người/ngày</string>
+    <string name="text_max">Max</string>
+    <string name="text_min">Min</string>
+
+    <string name="drawer_user">Đổi người dùng</string>
+    <string name="drawer_db_list">Database List</string>
+    <string name="drawer_settings">Settings</string>
+    <string name="drawer_about">About</string>
+    <string name="action_switch_db">Đổi CSDL</string>
+
+    <string name="error_404">Không tìm thấy dữ liệu!</string>
+    <string name="error_500">Kết nối dữ liệu không thành công!</string>
+    <string name="error_timeout">Kết nối quá lâu!</string>
+    <string name="error_">Kết nối dữ liệu không thành công! Vui lòng kiểm tra tình trạng internet!</string>
+    <string name="error_login_failed">"Tên đăng nhập hoặc mật khẩu không đúng!"</string>
+    <string name="error_incorrect_password">Sai mật khẩu!</string>
+    <string name="error_field_required">Không được để trống!</string>
+    <string name="dialog_header_warning">Thông báo!</string>
+    <string name="dialog_header_confirm">Xác nhận</string>
+    <string name="dialog_exit_title">Thoát</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_main2">MainActivity2</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+</resources>
