@@ -2,6 +2,9 @@
 nul
 NUL
 
+# Reference code (old Android source)
+old_android_src/
+
 # Claude settings
 .claude/
 
