@@ -22,36 +22,6 @@ export async function getVisibleDatabases() {
 }
 
 /**
- * Get database configuration by alias
- * @param {string} alias - Database alias to search for
- * @returns {Promise<Object|null>} Database config or null if not found
- */
-export async function getDatabaseByAlias(alias) {
-  try {
-    const all = await StorageService.getAllDatabases();
-    return all.find(db => db.dbAlias === alias) || null;
-  } catch (error) {
-    console.error('Error getting database by alias:', error);
-    return null;
-  }
-}
-
-/**
- * Get database configuration by ordinal (ID)
- * @param {number} ordinal - Database ID
- * @returns {Promise<Object|null>} Database config or null if not found
- */
-export async function getDatabaseById(ordinal) {
-  try {
-    const all = await StorageService.getAllDatabases();
-    return all.find(db => db.ordinal === ordinal) || null;
-  } catch (error) {
-    console.error('Error getting database by ID:', error);
-    return null;
-  }
-}
-
-/**
  * Check if databases have been initialized
  * @returns {Promise<boolean>} True if databases exist
  */
@@ -79,20 +49,6 @@ export async function ensureDatabasesInitialized() {
   } catch (error) {
     console.error('Error ensuring databases initialized:', error);
     throw error;
-  }
-}
-
-/**
- * Get count of visible databases
- * @returns {Promise<number>} Number of visible databases
- */
-export async function getVisibleDatabasesCount() {
-  try {
-    const visible = await getVisibleDatabases();
-    return visible.length;
-  } catch (error) {
-    console.error('Error getting visible databases count:', error);
-    return 0;
   }
 }
 

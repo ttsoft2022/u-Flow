@@ -15,22 +15,3 @@ export function formatNumberGerman(value, decimals = 0) {
     maximumFractionDigits: decimals,
   }).format(value);
 }
-
-/**
- * Format integer with German locale (no decimals)
- * @param {number} value - Number to format
- * @returns {string} Formatted integer string
- */
-export function formatInteger(value) {
-  return formatNumberGerman(value, 0);
-}
-
-/**
- * Format percentage with German locale
- * @param {number} value - Percentage value (0-100)
- * @param {number} decimals - Number of decimal places (default: 1)
- * @returns {string} Formatted percentage string with % sign
- */
-export function formatPercentage(value, decimals = 1) {
-  return `${formatNumberGerman(value, decimals)}%`;
-}
