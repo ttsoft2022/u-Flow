@@ -152,13 +152,15 @@ export async function deleteAllDatabases() {
 export async function initializeDefaultDatabases() {
   try {
     const existing = await getAllDatabases();
+    console.log('[StorageService] Existing databases:', existing.length, JSON.stringify(existing));
 
     // Only initialize if no databases exist
     if (existing.length === 0) {
+      console.log('[StorageService] No databases found, initializing defaults...');
       // Production databases (matching LoginActivity.java loadData())
       const defaultDatabases = [
         {
-          serverIP: '192.168.181.6:8081',
+          serverIP: '192.168.181.6:8081', // Internal IP for local network
           apiName: 'SewmanTD',
           dbIP: '192.168.181.5',
           dbName: 'sewman_thieudo',
@@ -184,10 +186,12 @@ export async function initializeDefaultDatabases() {
         await addDatabase(db);
       }
 
-      console.log('Default databases initialized');
+      console.log('[StorageService] Default databases initialized successfully');
+    } else {
+      console.log('[StorageService] Databases already exist, skipping initialization');
     }
   } catch (error) {
-    console.error('Error initializing default databases:', error);
+    console.error('[StorageService] Error initializing default databases:', error);
     throw error;
   }
 }

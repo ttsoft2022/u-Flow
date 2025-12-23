@@ -25,26 +25,56 @@ import {md5, dbEncrypt} from '../utils/crypto';
  */
 export async function login(serverIP, apiName, username, password, dbConfig) {
   try {
-    // Create client with base URL
-    const baseURL = `http://${serverIP}/${apiName}`;
-    const client = createApiClient(baseURL, 10000); // 10 second timeout
-
-    // Prepare params (matching Android RequestParams exactly)
-    // See LoginActivity.java line 406-412
-    const params = {
+    // Build URL with params
+    const params = new URLSearchParams({
       name_usl: username,
       password_usl: md5(password), // MD5 hash password
       dbIP: dbConfig.dbIP,
       dbName: dbConfig.dbName,
       dbUsername: dbConfig.dbUsername,
-      dbPassword: dbConfig.dbPassword, // Plain text for login (NOT encrypted)
-    };
+      dbPassword: dbEncrypt(dbConfig.dbPassword), // Hex encode to avoid special chars like @
+    });
 
-    console.log('[Login] Calling API:', baseURL + '/general/login');
-    console.log('[Login] Username:', username);
+    const fullURL = `http://${serverIP}/${apiName}/general/login?${params.toString()}`;
 
-    // Make GET request (AsyncHttpClient uses GET)
-    const response = await client.get('/general/login', {params});
+    console.log('[Login] ==================');
+    console.log('[Login] Full URL:', fullURL);
+    console.log('[Login] ==================');
+
+    // Use XMLHttpRequest instead of fetch (more compatible with RN)
+    const response = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', fullURL, true);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.timeout = 15000; // 15 seconds timeout
+
+      xhr.onload = () => {
+        console.log('[Login] XHR status:', xhr.status);
+        console.log('[Login] XHR response:', xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (e) {
+            reject(new Error('Invalid JSON response'));
+          }
+        } else {
+          reject(new Error(`HTTP ${xhr.status}`));
+        }
+      };
+
+      xhr.onerror = () => {
+        console.log('[Login] XHR error event fired');
+        reject(new Error('Network request failed (XHR)'));
+      };
+
+      xhr.ontimeout = () => {
+        console.log('[Login] XHR timeout');
+        reject(new Error('Request timeout'));
+      };
+
+      console.log('[Login] Sending XHR request...');
+      xhr.send();
+    });
 
     console.log('[Login] Response:', JSON.stringify(response));
 
@@ -53,10 +83,16 @@ export async function login(serverIP, apiName, username, password, dbConfig) {
     return {
       status: response.status === true || response.status === 'true',
       rawResponse: response,
+      error: null,
     };
   } catch (error) {
     console.error('[Login] Error:', error.message);
-    throw error;
+    // Return error details instead of throwing
+    return {
+      status: false,
+      rawResponse: null,
+      error: error.message || 'Unknown error',
+    };
   }
 }
 
@@ -97,7 +133,11 @@ export async function getDepartments(
       dbPassword: dbEncrypt(dbConfig.dbPassword), // Hex encode password
     };
 
-    console.log('[GetDepartments] Calling API:', baseURL + '/general/stats/getdepfactory');
+    console.log('[GetDepartments] ==================');
+    console.log('[GetDepartments] baseURL:', baseURL);
+    console.log('[GetDepartments] Full URL:', baseURL + '/general/stats/getdepfactory');
+    console.log('[GetDepartments] params:', JSON.stringify(params));
+    console.log('[GetDepartments] ==================');
 
     // Make GET request
     const response = await client.get('/general/stats/getdepfactory', {params});

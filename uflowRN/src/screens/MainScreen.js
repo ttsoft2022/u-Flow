@@ -247,18 +247,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    paddingVertical: 12, // 12dp like Android
+    paddingVertical: 8,
     backgroundColor: Colors.black,
   },
   topViewPager: {
-    flex: 0.45, // 45% weight like Android
+    flex: 0.48, // Tăng từ 45% lên 48%
     backgroundColor: Colors.black,
   },
   // Bottom Section
   bottomContainer: {
-    flex: 0.55, // 55% weight like Android
-    marginHorizontal: 4, // 4dp margin like Android
-    marginBottom: 8, // 8dp margin bottom like Android
+    flex: 0.52, // Giảm từ 55% xuống 52%
+    marginHorizontal: 4,
+    marginBottom: 4, // Giảm margin bottom
     backgroundColor: Colors.backgroundFragmentBottom, // #303030
     borderRadius: 8,
   },
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    paddingVertical: 12, // 12dp like Android
+    paddingVertical: 8, // Giảm padding
     backgroundColor: Colors.backgroundFragmentBottom,
   },
   bottomViewPager: {

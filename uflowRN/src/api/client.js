@@ -19,14 +19,15 @@ export const createApiClient = (baseURL, timeout = 30000) => {
   // Request interceptor for logging
   client.interceptors.request.use(
     config => {
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
-      if (config.params) {
-        // Log params but hide sensitive data
-        const safeParams = {...config.params};
-        if (safeParams.password_usl) safeParams.password_usl = '***';
-        if (safeParams.dbPassword) safeParams.dbPassword = '***';
-        console.log('[API Params]', safeParams);
-      }
+      // Build full URL for debugging
+      const fullURL = config.baseURL + config.url;
+      const queryString = config.params
+        ? '?' + Object.entries(config.params).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')
+        : '';
+      console.log('='.repeat(50));
+      console.log('[API] FULL URL:', fullURL + queryString);
+      console.log('[API] URL Length:', (fullURL + queryString).length);
+      console.log('='.repeat(50));
       return config;
     },
     error => {
@@ -70,12 +71,18 @@ export const createApiClient = (baseURL, timeout = 30000) => {
       if (error.request) {
         // Request was made but no response received
         console.error('[API No Response]', error.request);
-        throw new Error('No response from server. Please check your network.');
+        console.error('[API No Response] Error code:', error.code);
+        console.error('[API No Response] Error message:', error.message);
+        // Include more details in error message
+        const details = error.code ? ` (${error.code})` : '';
+        const nativeError = error.message || '';
+        throw new Error(`No response from server${details}. ${nativeError}`);
       }
 
       // Something else happened
       console.error('[API Error]', error.message);
-      throw error;
+      console.error('[API Error] Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      throw new Error(error.message || 'Unknown network error');
     }
   );
 

@@ -14,13 +14,17 @@ export function md5(text) {
  * Encode database password to hex string
  * Equivalent to Java dbEncrypt() and bytesToHex() in Utility.java
  * @param {string} text - Plain text password
- * @returns {string} Hex encoded password
+ * @returns {string} Hex encoded password (lowercase for compatibility)
  */
 export function dbEncrypt(text) {
-  const bytes = new TextEncoder().encode(text);
-  return Array.from(bytes)
-    .map(byte => byte.toString(16).toUpperCase().padStart(2, '0'))
-    .join('');
+  // Convert string to bytes manually (TextEncoder may not work on all RN platforms)
+  let hex = '';
+  for (let i = 0; i < text.length; i++) {
+    const charCode = text.charCodeAt(i);
+    hex += charCode.toString(16).padStart(2, '0');
+  }
+  console.log('[dbEncrypt] Input:', text, '-> Output:', hex);
+  return hex;
 }
 
 /**

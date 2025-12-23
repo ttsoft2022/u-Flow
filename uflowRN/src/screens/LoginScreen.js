@@ -8,8 +8,10 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Platform,
+  Modal,
+  FlatList,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useApp} from '../contexts/AppContext';
 import {useAuth} from '../contexts/AuthContext';
@@ -44,6 +46,7 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showDbPicker, setShowDbPicker] = useState(false);
 
   // Load databases and saved credentials on mount
   useEffect(() => {
@@ -56,10 +59,44 @@ export default function LoginScreen() {
    */
   const loadDatabases = async () => {
     try {
-      const dbList = await DatabaseService.getVisibleDatabases();
+      console.log('[LoginScreen] Loading databases...');
+      // Ensure databases are initialized first
+      await DatabaseService.ensureDatabasesInitialized();
+      let dbList = await DatabaseService.getVisibleDatabases();
+      console.log('[LoginScreen] Loaded databases:', dbList.length, dbList.map(db => db.dbAlias));
+
+      // Fallback: if no databases loaded, use hardcoded defaults
+      if (!dbList || dbList.length === 0) {
+        console.log('[LoginScreen] No databases from storage, using hardcoded defaults');
+        dbList = [
+          {
+            ordinal: 1,
+            serverIP: '192.168.181.6:8081', // Internal IP for local network
+            apiName: 'SewmanTD',
+            dbIP: '192.168.181.5',
+            dbName: 'sewman_thieudo',
+            dbAlias: 'sewman_thieudo',
+            dbUsername: 'SYSDBA',
+            dbPassword: 'Md@Fb@24',
+            isVisible: 1,
+          },
+          {
+            ordinal: 2,
+            serverIP: 'md1.sewman.vn:8081',
+            apiName: 'SewmanTD',
+            dbIP: '192.168.181.5',
+            dbName: 'sewman_thieudo_n',
+            dbAlias: 'sewman_thieudo_n',
+            dbUsername: 'SYSDBA',
+            dbPassword: 'Md@Fb@24',
+            isVisible: 1,
+          },
+        ];
+      }
+
       setDatabases(dbList);
     } catch (error) {
-      console.error('Load databases error:', error);
+      console.error('[LoginScreen] Load databases error:', error);
       Alert.alert(Strings.dialogHeaderWarning, 'Failed to load databases');
     }
   };
@@ -223,27 +260,62 @@ export default function LoginScreen() {
             />
           </View>
 
-          {/* Database Selection */}
-          <View style={styles.inputContainer}>
+          {/* Database Selection - Custom Dropdown */}
+          <TouchableOpacity
+            style={styles.inputContainer}
+            onPress={() => databases.length > 0 && setShowDbPicker(true)}
+            activeOpacity={0.7}>
             <DatabaseIcon size={20} color={Colors.accent} />
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={selectedDbIndex}
-                onValueChange={itemValue => setSelectedDbIndex(itemValue)}
-                style={styles.picker}
-                dropdownIconColor={Colors.white}
-                mode="dropdown">
-                {databases.map((db, index) => (
-                  <Picker.Item
-                    key={index}
-                    label={db.dbAlias}
-                    value={index}
-                  />
-                ))}
-              </Picker>
+            <View style={styles.dropdownWrapper}>
+              <Text style={styles.dropdownText}>
+                {databases.length === 0
+                  ? 'Đang tải databases...'
+                  : databases[selectedDbIndex]?.dbAlias || 'Chọn database'}
+              </Text>
+              <Text style={styles.dropdownArrow}>▼</Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
+          {/* Database Picker Modal */}
+          <Modal
+            visible={showDbPicker}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={() => setShowDbPicker(false)}>
+            <TouchableOpacity
+              style={styles.modalOverlay}
+              activeOpacity={1}
+              onPress={() => setShowDbPicker(false)}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Chọn Database</Text>
+                <FlatList
+                  data={databases}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({item, index}) => (
+                    <TouchableOpacity
+                      style={[
+                        styles.modalItem,
+                        selectedDbIndex === index && styles.modalItemSelected,
+                      ]}
+                      onPress={() => {
+                        setSelectedDbIndex(index);
+                        setShowDbPicker(false);
+                      }}>
+                      <Text style={[
+                        styles.modalItemText,
+                        selectedDbIndex === index && styles.modalItemTextSelected,
+                      ]}>
+                        {item.dbAlias}
+                      </Text>
+                      {selectedDbIndex === index && (
+                        <Text style={styles.checkmark}>✓</Text>
+                      )}
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            </TouchableOpacity>
+          </Modal>
           {/* Login Button */}
           <TouchableOpacity
             style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -298,6 +370,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     marginBottom: 12,
+    overflow: 'hidden',
   },
   inputWithIcon: {
     flex: 1,
@@ -306,16 +379,22 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     paddingVertical: 0,
   },
-  pickerWrapper: {
+  dropdownWrapper: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginLeft: 12,
   },
-  picker: {
+  dropdownText: {
     color: Colors.white,
-    height: 50,
-    backgroundColor: 'transparent',
-    marginTop: -10,
-    marginBottom: -10,
+    fontSize: 16,
+    flex: 1,
+  },
+  dropdownArrow: {
+    color: Colors.gray,
+    fontSize: 12,
+    marginLeft: 8,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -351,5 +430,50 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     fontStyle: 'italic',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: Colors.cardBackground,
+    borderRadius: 12,
+    width: '100%',
+    maxHeight: 300,
+    padding: 16,
+  },
+  modalTitle: {
+    color: Colors.white,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  modalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  modalItemSelected: {
+    backgroundColor: Colors.accent + '20',
+  },
+  modalItemText: {
+    color: Colors.gray,
+    fontSize: 16,
+  },
+  modalItemTextSelected: {
+    color: Colors.white,
+    fontWeight: '600',
+  },
+  checkmark: {
+    color: Colors.accent,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });

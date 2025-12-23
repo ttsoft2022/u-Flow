@@ -96,7 +96,7 @@ export function AuthProvider({children}) {
         console.log('[AuthContext] Login failed - status is false');
         return {
           success: false,
-          message: 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.',
+          message: loginResponse.error || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.',
         };
       }
 
